@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "./Card";
 import backgroundImg from "../images/backgroundImg.png";
 import hat from "../images/hat.png";
@@ -34,30 +34,64 @@ let cardsArray=[{ "id": 1,"key":1,"imgSrc1": backgroundImg, "imgSrc2": bat, "isF
 
 
 
+
 function Game(){
     const gridContainer={display:'grid',gridGap:'50px',gridTemplateColumns:'auto auto auto auto'};
 
     const [cards,setCards]=useState(cardsArray);
     const [timer,setTimer]=useState(60);
     const [isStarted,setStarted]=useState(false);
+    const [clicks,setClicks]=useState(0);
     const [username,setUsername]=useState("");
 
 
     function handleClick(id){
         let cardsChange=cards;
         const index=cardsChange.findIndex(card=>card.id===id);
+        if(cards[index].isMatched){
+            return;
+        }
         cardsChange[index].isFlipped=!cardsChange[index].isFlipped;
         setCards([...cardsChange]);
+        setClicks(clicks+1);
     }
 
     function startGame(){
         setStarted(true);
-        
     }
+
+    useEffect(()=>{
+        console.log(clicks);
+        let filteredCards=cards;
+        let cardsClone=cards;
+        if(clicks===2){
+            const [a,b]=filteredCards.filter(card=>card.isFlipped && !card.isMatched);
+            if(a.key===b.key){
+
+                const i1=cardsClone.findIndex(card=>card.id===a.id);
+                const i2=cardsClone.findIndex(card=>card.id===b.id);
+                cardsClone[i1].isMatched=true;
+                cardsClone[i2].isMatched=true;
+                setCards([...cardsClone]);
+                setClicks(0);
+            }
+            else{
+                const i1=cardsClone.findIndex(card=>card.id===a.id);
+                const i2=cardsClone.findIndex(card=>card.id===b.id);
+                cardsClone[i1].isFlipped=false;
+                cardsClone[i2].isFlipped=false;
+                setCards([...cardsClone]);
+                setClicks(0);
+            }
+
+        }
+        
+    },[clicks,cards])
 
 
 
     let rows=[];
+
     cards.map(card=>rows.push(<Card id={card.id} imgSrc1={card.imgSrc1} imgSrc2={card.imgSrc2} 
         isFlipped={card.isFlipped} isMatched={card.isMatched} onClick={()=>handleClick(card.id)}/>));
 
