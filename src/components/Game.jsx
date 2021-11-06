@@ -62,13 +62,11 @@ function Game(){
     }
 
     useEffect(()=>{
-        console.log(clicks);
         let filteredCards=cards;
         let cardsClone=cards;
         if(clicks===2){
             const [a,b]=filteredCards.filter(card=>card.isFlipped && !card.isMatched);
             if(a.key===b.key){
-
                 const i1=cardsClone.findIndex(card=>card.id===a.id);
                 const i2=cardsClone.findIndex(card=>card.id===b.id);
                 cardsClone[i1].isMatched=true;
@@ -94,7 +92,19 @@ function Game(){
     },[clicks,cards,points]);
 
 
+    useEffect(()=>{
 
+        if(timer===0|| points===8){
+            return;
+        }
+            setTimeout(()=>{
+
+                setTimer(timer-1);
+    
+            },1000)
+        
+
+    },[timer,points])
 
 
     let rows=[];
@@ -111,6 +121,9 @@ function Game(){
                 </div>
                 <div>
                     {points}
+                </div>
+                <div>
+                    {timer}
                 </div>
                 <div style={gridContainer}>
                    {rows}
