@@ -38,11 +38,12 @@ let cardsArray=[{ "id": 1,"key":1,"imgSrc1": backgroundImg, "imgSrc2": bat, "isF
 function Game(){
     const gridContainer={display:'grid',gridGap:'50px',gridTemplateColumns:'auto auto auto auto'};
 
-    const [cards,setCards]=useState(cardsArray);
+    const [cards,setCards]=useState(cardsArray.sort((a,b)=>0.5-Math.random()));
     const [timer,setTimer]=useState(60);
     const [isStarted,setStarted]=useState(false);
     const [clicks,setClicks]=useState(0);
     const [username,setUsername]=useState("");
+    const [points,setPoints]=useState(0);
 
 
     function handleClick(id){
@@ -74,19 +75,25 @@ function Game(){
                 cardsClone[i2].isMatched=true;
                 setCards([...cardsClone]);
                 setClicks(0);
+                setPoints(points+1);
             }
             else{
                 const i1=cardsClone.findIndex(card=>card.id===a.id);
                 const i2=cardsClone.findIndex(card=>card.id===b.id);
-                cardsClone[i1].isFlipped=false;
-                cardsClone[i2].isFlipped=false;
-                setCards([...cardsClone]);
+                setTimeout(()=>{
+                    cardsClone[i1].isFlipped=false;
+                    cardsClone[i2].isFlipped=false;
+                    setCards([...cardsClone]);
+                },650);
                 setClicks(0);
+                
             }
 
         }
         
-    },[clicks,cards])
+    },[clicks,cards,points]);
+
+
 
 
 
@@ -101,6 +108,9 @@ function Game(){
              <div>
                 <div>
                    {username}
+                </div>
+                <div>
+                    {points}
                 </div>
                 <div style={gridContainer}>
                    {rows}
