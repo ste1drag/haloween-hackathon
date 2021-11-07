@@ -38,18 +38,22 @@ let cardsArray=[{ "id": 1,"key":1,"imgSrc1": backgroundImg, "imgSrc2": bat, "isF
 function Game(){
     const gridContainer={display:'grid',gridGap:'50px',gridTemplateColumns:'auto auto auto auto'};
 
-    const [cards,setCards]=useState(cardsArray.sort((a,b)=>0.5-Math.random()));
-    const [timer,setTimer]=useState(60);
+    const [cards,setCards]=useState([]);
+    const [timer,setTimer]=useState(null);
     const [isStarted,setStarted]=useState(false);
     const [clicks,setClicks]=useState(0);
     const [username,setUsername]=useState("");
     const [points,setPoints]=useState(0);
+    const [ranking,setRanking]=useState([]);
 
 
     function handleClick(id){
+        if(!isStarted){
+            return;
+        }
         let cardsChange=cards;
         const index=cardsChange.findIndex(card=>card.id===id);
-        if(cards[index].isMatched){
+        if(cards[index].isMatched || cards[index].isFlipped){
             return;
         }
         cardsChange[index].isFlipped=!cardsChange[index].isFlipped;
@@ -58,43 +62,62 @@ function Game(){
     }
 
     function startGame(){
+        cardsArray.forEach(card=>card.isFlipped=false);
+        cardsArray.forEach(card=>card.isMatched=false);
+        setCards([...cardsArray].sort((a,b)=>0.5-Math.random()));
         setStarted(true);
+        setTimer(45);
+        setClicks(0);
+        setPoints(0);
     }
 
     useEffect(()=>{
-        let filteredCards=cards;
-        let cardsClone=cards;
-        if(clicks===2){
-            const [a,b]=filteredCards.filter(card=>card.isFlipped && !card.isMatched);
-            if(a.key===b.key){
-                const i1=cardsClone.findIndex(card=>card.id===a.id);
-                const i2=cardsClone.findIndex(card=>card.id===b.id);
-                cardsClone[i1].isMatched=true;
-                cardsClone[i2].isMatched=true;
-                setCards([...cardsClone]);
-                setClicks(0);
-                setPoints(points+1);
-            }
-            else{
-                const i1=cardsClone.findIndex(card=>card.id===a.id);
-                const i2=cardsClone.findIndex(card=>card.id===b.id);
-                setTimeout(()=>{
-                    cardsClone[i1].isFlipped=false;
-                    cardsClone[i2].isFlipped=false;
+        if(isStarted){
+            let filteredCards=cards;
+            let cardsClone=cards;
+            if(clicks===2){
+                const [a,b]=filteredCards.filter(card=>card.isFlipped && !card.isMatched);
+                if(a.key===b.key){
+                    const i1=cardsClone.findIndex(card=>card.id===a.id);
+                    const i2=cardsClone.findIndex(card=>card.id===b.id);
+                    cardsClone[i1].isMatched=true;
+                    cardsClone[i2].isMatched=true;
                     setCards([...cardsClone]);
-                },650);
-                setClicks(0);
-                
-            }
+                    setClicks(0);
+                    setPoints(points+1);
+                }
+                else{
+                    const i1=cardsClone.findIndex(card=>card.id===a.id);
+                    const i2=cardsClone.findIndex(card=>card.id===b.id);
+                    setTimeout(()=>{
+                        cardsClone[i1].isFlipped=false;
+                        cardsClone[i2].isFlipped=false;
+                        setCards([...cardsClone]);
+                    },650);
+                    setClicks(0);
+                    
+                }
 
+            }
         }
         
-    },[clicks,cards,points]);
+    },[clicks]);
 
 
     useEffect(()=>{
+        if(!isStarted){
+            return;
+        }
 
-        if(timer===0|| points===8){
+        if(timer===0){
+            setStarted(false);
+            return;
+        }
+        if(points===8){
+            let rank=ranking;
+            rank.push({user:username,score:points});
+            setRanking([...rank]);
+            setStarted(false);
             return;
         }
             setTimeout(()=>{
@@ -104,8 +127,7 @@ function Game(){
             },1000)
         
 
-    },[timer,points])
-
+    },[timer]);
 
     let rows=[];
 
@@ -134,6 +156,13 @@ function Game(){
 
                  <input type="text" onChange={(e)=>setUsername(e.target.value)} />
                  <button onClick={()=>startGame()}>Zapocni igru</button>
+
+                 <div>
+                    <h3>Rang lista</h3>
+                    {ranking.map(rank=>{
+                        <li>{rank.user} {rank.score}</li>
+                    })}
+                </div>
 
              </div> 
              }
