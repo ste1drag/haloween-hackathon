@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Card from "./Card";
-import backgroundImg from "../images/backgroundImg.png";
-import hat from "../images/hat.png";
-import candy from "../images/candy.png";
-import castle from "../images/castle.png";
-import ghost from "../images/ghost.jpg";
-import hand from "../images/hand.png";
-import happy from "../images/happy.jpg";
-import bat from "../images/bat.png";
-import pumpkin from "../images/pumpkin.png";
+import Card from "./components/Card";
+import backgroundImg from "./images/backgroundImg.png";
+import hat from "./images/hat.png";
+import candy from "./images/candy.png";
+import castle from "./images/castle.png";
+import ghost from "./images/ghost.jpg";
+import hand from "./images/hand.png";
+import happy from "./images/happy.jpg";
+import bat from "./images/bat.png";
+import pumpkin from "./images/pumpkin.png";
+import './App.css';
 
 
 let cardsArray=[{ "id": 1,"key":1,"imgSrc1": backgroundImg, "imgSrc2": bat, "isFlipped": false, "isMatched": false },
@@ -115,8 +116,8 @@ function Game(){
         }
         if(points===8){
             let rank=ranking;
-            rank.push({user:username,score:points});
-            setRanking([...rank]);
+            rank.push({user:username,score:timer});
+            setRanking([...rank].sort((a,b)=>(a>b ? 1:-1)));
             setStarted(false);
             console.log(ranking);
             return;
@@ -134,18 +135,23 @@ function Game(){
 
     cards.map(card=>rows.push(<Card id={card.id} imgSrc1={card.imgSrc1} imgSrc2={card.imgSrc2} 
         isFlipped={card.isFlipped} isMatched={card.isMatched} onClick={()=>handleClick(card.id)}/>));
+    
+    let overallRanking=[];
+    ranking.map(rank=>{
+      overallRanking.push(<li>{rank.user}:{rank.score}</li>);
+    });
 
     return(
         <div>
             {isStarted ?
              <div>
-                <div>
+                <div style={{color:'#ff3300', font:'35px',textAlign:'center'}}>
                    {username}
                 </div>
-                <div>
+                <div style={{color:'#ff3300', font:'35px',textAlign:'center'}}>
                     {points}
                 </div>
-                <div>
+                <div style={{color:'#ff3300', font:'35px',textAlign:'center'}}>
                     {timer}
                 </div>
                 <div style={gridContainer}>
@@ -153,13 +159,19 @@ function Game(){
                 </div>
             </div>
              : 
-             <div>
+             <div style={{margin:'auto'}}>
 
-                 <input type="text" onChange={(e)=>setUsername(e.target.value)} />
-                 <button onClick={()=>startGame()}>Zapocni igru</button>
+                 <label htmlFor="input" style={{color:'#ff3300',font:'Arial'}}>Unesi ime</label>
+                 <br />
+                 <input className="input" type="text" onChange={(e)=>setUsername(e.target.value)} />
+                 <br />
+                 <button className="button" onClick={()=>startGame()}>Zapocni igru</button>
 
                  <div>
                     <h3>Rang lista</h3>
+                    <div>
+                        {overallRanking}
+                    </div>
                 </div>
 
              </div> 
