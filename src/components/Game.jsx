@@ -101,7 +101,7 @@ function Game(){
             }
         }
         
-    },[clicks]);
+    },[clicks,cards,isStarted,points]);
 
 
     useEffect(()=>{
@@ -128,7 +128,7 @@ function Game(){
             },1000)
         
 
-    },[timer]);
+    },[timer,isStarted,points,ranking,username]);
 
     let rows=[];
 
