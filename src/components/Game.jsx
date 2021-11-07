@@ -118,6 +118,7 @@ function Game(){
             rank.push({user:username,score:points});
             setRanking([...rank]);
             setStarted(false);
+            console.log(ranking);
             return;
         }
             setTimeout(()=>{
@@ -159,9 +160,6 @@ function Game(){
 
                  <div>
                     <h3>Rang lista</h3>
-                    {ranking.map(rank=>{
-                        <li>{rank.user} {rank.score}</li>
-                    })}
                 </div>
 
              </div> 
